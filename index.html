@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Ecolume's Farm App</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <style>
+         body {
+         background-color: #f0f8ea;
+         color: #2c3e50;
+         }
+         .navbar {
+         background-color: #4a7c59 !important;
+         }
+         .btn-primary {
+         background-color: #4a7c59;
+         border-color: #4a7c59;
+         }
+         .btn-primary:hover {
+         background-color: #3a6249;
+         border-color: #3a6249;
+         }
+         .card {
+         border-radius: 15px;
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+         transition: transform 0.3s ease;
+         }
+         .card:hover {
+         transform: translateY(-5px);
+         }
+         .filter-section {
+         margin-bottom: 20px;
+         padding: 15px;
+         background-color: #ffffff;
+         border-radius: 10px;
+         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+         }
+         .filter-section h5 {
+         font-size: 1rem;
+         font-weight: 600;
+         }
+         .filter-section .form-control,
+         .filter-section .form-select {
+         height: 38px;
+         }
+         .filter-section .btn {
+         height: 38px;
+         padding-top: 0;
+         padding-bottom: 0;
+         line-height: 38px;
+         }
+         @media (max-width: 768px) {
+         .filter-section .row > div {
+         margin-bottom: 10px;
+         }
+         }
+         .image-search {
+         margin-bottom: 20px;
+         }
+         .image-container {
+         position: relative;
+         }
+         .image-name {
+         position: absolute;
+         bottom: 0;
+         left: 0;
+         right: 0;
+         background-color: rgba(0, 0, 0, 0.7);
+         color: white;
+         padding: 5px;
+         text-align: center;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         white-space: nowrap;
+         }
+         .rename-image {
+         position: absolute;
+         top: 5px;
+         right: 40px;
+         background-color: rgba(255, 255, 255, 0.7);
+         border-radius: 50%;
+         padding: 5px;
+         cursor: pointer;
+         }
+         .home-container {
+         display: flex;
+         height: calc(100vh - 56px);
+         }
+         .home-image {
+         flex: 1;
+         background-image: url('images/soil.jpeg');
+         background-size: cover;
+         background-position: center;
+         }
+         .home-form {
+         flex: 1;
+         display: flex;
+         flex-direction: column;
+         justify-content: center;
+         padding: 2rem;
+         }
+         @media (max-width: 768px) {
+         .home-container {
+         flex-direction: column;
+         }
+         .home-image, .home-form {
+         flex: none;
+         height: 50vh;
+         }
+         }
+         .container {
+         max-width: 1200px;
+         margin: 0 auto;
+         padding: 2rem;
+         }
+         h1, h2 {
+         text-align: center;
+         margin-bottom: 2rem;
+         font-weight: 600;
+         color: #4CAF50;
+         }
+         .blue-text {
+         color: #C19A6B;
+         }
+         .login-container, .dashboard-container {
+         background-color: #ffffff;
+         border-radius: 20px;
+         padding: 2rem;
+         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+         }
+         .hidden {
+         display: none;
+         }
+         .header {
+         background-color: #4CAF50;
+         color: white;
+         padding: 1rem 0;
+         position: sticky;
+         top: 0;
+         z-index: 1000;
+         }
+         .nav-links a {
+         color: white;
+         text-decoration: none;
+         font-weight: 600;
+         transition: opacity 0.3s ease;
+         }
+         .nav-links a:hover {
+         opacity: 0.8;
+         }
+         .btn {
+         border-radius: 25px;
+         transition: all 0.3s ease;
+         }
+         .btn:hover {
+         transform: translateY(-2px);
+         }
+         #logTable {
+         border-collapse: separate;
+         border-spacing: 0 10px;
+         }
+         #logTable th, #logTable td {
+         padding: 1rem;
+         border: none;
+         }
+         #logTable th {
+         background-color: #4CAF50;
+         color: white;
+         }
+         #logTable tr {
+         background-color: white;
+         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+         }
+         .image-container img {
+         width: 100%;
+         height: 200px;
+         object-fit: cover;
+         }
+         .delete-image {
+         position: absolute;
+         top: 5px;
+         right: 5px;
+         background-color: rgba(255, 255, 255, 0.7);
+         border-radius: 50%;
+         padding: 5px;
+         cursor: pointer;
+         }
+         .switch {
+         position: fixed;
+         bottom: 20px;
+         right: 20px;
+         display: inline-block;
+         width: 60px;
+         height: 34px;
+         z-index: 1000;
+         }
+         .switch input {
+         opacity: 0;
+         width: 0;
+         height: 0;
+         }
+         .slider {
+         position: absolute;
+         cursor: pointer;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background-color: #ccc;
+         transition: .4s;
+         border-radius: 34px;
+         }
+         .slider:before {
+         position: absolute;
+         content: "";
+         height: 26px;
+         width: 26px;
+         left: 4px;
+         bottom: 4px;
+         background-color: white;
+         transition: .4s;
+         border-radius: 50%;
+         }
+         input:checked + .slider {
+         background-color: #2196F3;
+         }
+         input:checked + .slider:before {
+         transform: translateX(26px);
+         }
+         body.dark-mode {
+         background-color: #2c3e50;
+         color: #ecf0f1;
+         }
+         body.dark-mode .login-container,
+         body.dark-mode .dashboard-container,
+         body.dark-mode #logTable tr,
+         body.dark-mode .image-container {
+         background-color: #34495e;
+         }
+         body.dark-mode input,
+         body.dark-mode .btn {
+         background-color: #2c3e50;
+         color: #ecf0f1;
+         border-color: #7f8c8d;
+         }
+         body.dark-mode #logTable th {
+         background-color: #2980b9;
+         }
+         .loading-overlay {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background-color: rgba(0, 0, 0, 0.5);
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         z-index: 9999;
+         }
+         .toast-container {
+         position: fixed;
+         bottom: 20px;
+         right: 20px;
+         z-index: 1000;
+         }
+         .toast {
+         background-color: #333;
+         color: #fff;
+         padding: 15px;
+         border-radius: 5px;
+         margin-bottom: 10px;
+         opacity: 0;
+         transition: opacity 0.3s ease-in-out;
+         }
+         .toast.show {
+         opacity: 1;
+         }
+         .chart-container {
+         width: 100%;
+         max-width: 400px;
+         margin: 20px auto;
+         }
+         .navbar-brand {
+         display: flex;
+         align-items: center;
+         }
+         .navbar-logo {
+         height: 40px;
+         transform: scale(2.5); 
+         transform-origin: left center; 
+         }
+         .register-button {
+         margin-left: 10px; 
+         }
+         #tankList .tank-item {
+          height: 100%;
+          }
+
+          #tankList .card {
+              height: 100%;
+              display: flex;
+              flex-direction: column;
+          }
+
+          #tankList .card-body {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+          }
+
+          #tankList .tank-icon {
+              display: flex;
+              align-items: center;
+              margin-bottom: 10px;
+          }
+
+          #tankList .tank-buttons {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 5px;
+          }
+
+          @media (max-width: 576px) {
+              #tankList .tank-buttons {
+                  flex-direction: column;
+              }
+          }
+          #tankList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.tank-item {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tank-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tank-icon {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.tank-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+@media (max-width: 576px) {
+    .tank-buttons {
+        flex-direction: column;
+    }
+}
+
+#tankList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Increased from 250px to 280px */
+    gap: 1rem;
+}
+
+.tank-item {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tank-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tank-icon {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px; /* Increased from 10px to 15px for more space */
+}
+
+.tank-buttons {
+    display: flex;
+    justify-content: space-between; /* Changed from flex-wrap to space-between */
+    gap: 5px;
+}
+
+.tank-buttons .btn {
+    flex: 1; /* Allow buttons to grow and shrink equally */
+    padding: 6px 8px; /* Slightly reduced padding */
+    font-size: 0.875rem; /* Slightly smaller font size */
+}
+
+@media (max-width: 320px) {
+    .tank-buttons {
+        flex-direction: column;
+    }
+    
+    .tank-buttons .btn {
+        width: 90%;
+        margin-bottom: 8px;
+    }
+}
+
+/* Rest of the styles remain the same */
+#tankSelectionView .text-center {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+#cuteCow {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: auto;
+    transition: opacity 0.3s ease;
+}
+
+#tankSelectionView .text-center:hover #cuteCow {
+    opacity: 0;
+}
+
+#tankSelectionView .btn-primary {
+    background-color: #635147;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    padding: 10px 13px;
+}
+
+#tankSelectionView .btn-primary:hover {
+    background-color: #803522;
+    transform: translateY(-3px);
+}
+
+#tankSelectionView .btn-primary i {
+    color: #ffffff;
+}
+
+#tankSelectionView .btn-primary span {
+    display: inline-block;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+         .icon-image {
+         width: 2rem; 
+         height: auto; 
+         margin-right: 10px; 
+         vertical-align: middle; 
+         }
+      </style>
+   </head>
+   <body>
+      <div class="header">
+         <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+               <a class="navbar-brand" href="#" id="dashboardLink">
+               <img src="images/ecolume_logo.png" class="navbar-logo">
+               </a>
+               <div class="navbar-nav nav-links">
+                  <a class="nav-link" href="#" id="homeLink"><i class="fas fa-home"></i> Home</a>
+                  <a class="nav-link hidden" href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a>
+               </div>
+            </div>
+         </nav>
+      </div>
+      <div id="homeContainer" class="home-container">
+         <div class="home-image"></div>
+         <div class="home-form">
+            <div id="loginContainer" class="login-container">
+               <h2>
+                  <img src="images/barn.png" alt="Icon" class="icon-image"> <!-- Add image here -->
+                  Welcome to <span class="blue-text">e-Farmhouse.</span>
+               </h2>
+               <form>
+                  <div class="mb-3">
+                     <input type="email" class="form-control" id="email" placeholder="Email">
+                  </div>
+                  <div class="mb-3">
+                     <input type="password" class="form-control" id="password" placeholder="Password">
+                  </div>
+                  <button type="button" class="btn btn-primary" onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
+                  <button type="button" class="btn btn-secondary register-button" onclick="register()"><i class="fas fa-user-plus"></i> Register</button>
+               </form>
+            </div>
+         </div>
+      </div>
+      <div id="dashboardContainer" class="container mt-4 hidden">
+         <div id="dashboardOptions" class="row mb-4">
+            <div class="col-md-6">
+               <div class="card">
+                  <div class="card-body">
+                     <h5 class="card-title"><i class="fas fa-leaf"></i> Log Nutrient Entry</h5>
+                     <p class="card-text">Record your latest nutrient data and track your farm's health.</p>
+                     <button class="btn btn-primary" id="logEntryButton"><i class="fas fa-clipboard-list"></i> Go to Log</button>
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-6">
+               <div class="card">
+                  <div class="card-body">
+                     <h5 class="card-title"><i class="fas fa-camera"></i> Image Gallery</h5>
+                     <p class="card-text">View and manage your farm images in one place.</p>
+                     <button class="btn btn-secondary" id="imageGalleryButton"><i class="fas fa-images"></i> View Gallery</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div id="logEntrySection" class="hidden">
+            <h2><i class="fas fa-leaf"></i> Log Nutrient Entry</h2>
+            <form id="logEntryForm">
+              <div class="row mb-3">
+                 <div class="col-md-6">
+                    <input type="date" id="date" class="form-control" required>
+                 </div>
+                 <div class="col-md-6">
+                    <input type="text" id="tank" class="form-control" placeholder="Tank Name" required>
+                 </div>
+              </div>
+              <input type="text" id="foodItem" class="form-control mb-3" placeholder="Food Item Name" required>
+              <input type="number" id="foodFed" class="form-control mb-3" placeholder="Food fed (g)" required>
+              <input type="number" id="phosphorous" class="form-control mb-3" placeholder="Phosphorous (mg)" required>
+              <input type="number" id="nitrogen" class="form-control mb-3" placeholder="Nitrogen (mg)" required>
+              <input type="number" id="potassium" class="form-control mb-3" placeholder="Potassium (mg)" required>
+              <input type="number" id="emissions" class="form-control mb-3" placeholder="Emissions (kg CO2/kg)" required>
+              <button type="button" class="btn btn-success" onclick="submitLogEntry()"><i class="fas fa-plus-circle"></i> Submit</button>
+            </form>
+            <div class="filter-section mt-4">
+              <div class="row align-items-center">
+                 <div class="col-md-2">
+                    <h5 class="mb-0">Filter and Sort:</h5>
+                 </div>
+                 <div class="col-md-2">
+                    <input type="date" id="dateFilter" class="form-control" placeholder="Filter by Date">
+                 </div>
+                 <div class="col-md-2">
+                    <select id="tankFilter" class="form-select">
+                       <option value="">All Tanks</option>
+                       <!-- Tank options will be populated dynamically -->
+                    </select>
+                 </div>
+                 <div class="col-md-3">
+                    <select id="sortBy" class="form-select">
+                       <option value="">Sort by...</option>
+                       <option value="date">Date</option>
+                       <option value="foodFed">Food fed (g)</option>
+                       <option value="phosphorous">Phosphorous</option>
+                       <option value="nitrogen">Nitrogen</option>
+                       <option value="potassium">Potassium</option>
+                       <option value="emissions">Emissions</option>
+                    </select>
+                 </div>
+                 <div class="col-md-3">
+                    <button class="btn btn-primary me-2" onclick="applyFilters()">Apply</button>
+                    <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+                 </div>
+              </div>
+           </div>
+            <div class="table-responsive mt-4">
+              <table id="logTable" class="table">
+                <thead>
+                   <tr>
+                      <th>Date</th>
+                      <th>Tank</th>
+                      <th>Food Item</th>
+                      <th>Food fed (g)</th>
+                      <th>P (mg)</th>
+                      <th>N (mg)</th>
+                      <th>K (mg)</th>
+                      <th>Emissions (kg CO2/kg)</th>
+                      <th>Actions</th>
+                   </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="row mt-4">
+               <div class="col-md-8">
+                  <div id="chartSection" class="chart-container">
+                     <canvas id="macronutrientChart"></canvas>
+                  </div>
+               </div>
+               <div class="col-md-4 d-flex align-items-center justify-content-center">
+                  <button class="btn btn-info" onclick="downloadExcel()"><i class="fas fa-file-excel"></i> Download as Excel</button>
+               </div>
+            </div>
+         </div>
+         <div id="imageGallerySection" class="hidden">
+            <h2><i class="fas fa-camera"></i> Image Gallery</h2>
+            <!-- <button class="btn btn-secondary mb-3" onclick="showDashboardOptions()"><i class="fas fa-arrow-left"></i> Back to Dashboard</button> -->
+            <div id="tankSelectionView" class="container mt-5">
+              <div class="text-center mb-4 position-relative">
+                  <img id="cuteCow" src="images/tank.png" alt="Cute Tank">
+                  <button class="btn btn-primary btn-lg" onclick="showAddTankModal()">
+                      <i class="fas fa-tachometer-alt fa-2x me-2"></i>
+                      <span class="fs-4 fw-bold">Add New Tank</span>
+                  </button>
+              </div>
+              <div id="tankList"></div>
+          </div>
+            <div id="tankGalleryView" class="hidden">
+               <button class="btn btn-secondary mb-3" onclick="showTankSelection()"><i class="fas fa-arrow-left"></i> Back to Tanks</button>
+               <h3 id="currentTankName"></h3>
+               <div class="image-search mb-3">
+                  <input type="text" id="imageSearch" class="form-control" placeholder="Search images...">
+               </div>
+               <input type="file" id="imageInput" multiple class="form-control mb-3">
+               <button class="btn btn-primary mb-3" onclick="uploadImages()"><i class="fas fa-upload"></i> Upload Images</button>
+               <div id="gallery" class="row"></div>
+            </div>
+         </div>
+         <!-- Add Tank Modal -->
+         <div class="modal fade" id="addTankModal" tabindex="-1" aria-labelledby="addTankModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title" id="addTankModalLabel">Add New Tank</h5>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                     <input type="text" id="newTankName" class="form-control" placeholder="Enter tank name">
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                     <button type="button" class="btn btn-primary" onclick="addNewTank()">Add Tank</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="loadingOverlay" class="loading-overlay d-none">
+         <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
+         </div>
+      </div>
+      <div id="toastContainer" class="toast-container"></div>
+      <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="imageModalLabel">Image View</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               </div>
+               <div class="modal-body">
+                  <img id="modalImage" src="" alt="Full-screen image" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+               </div>
+            </div>
+         </div>
+      </div>
+      <label class="switch">
+      <input type="checkbox" id="darkModeToggle">
+      <span class="slider round"></span>
+      </label>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-storage-compat.js"></script>
+      <script>
+         // Firebase configuration
+         const firebaseConfig = {
+             apiKey: "AIzaSyCgSoO1hn_5KssPD8UmqTMOtN00ufGSiYY",
+             authDomain: "dscp-compost.firebaseapp.com",
+             databaseURL: "https://dscp-compost-default-rtdb.asia-southeast1.firebasedatabase.app",
+             projectId: "dscp-compost",
+             storageBucket: "dscp-compost.appspot.com",
+             messagingSenderId: "1073731751499",
+             appId: "1:1073731751499:web:7b5aa4a654919bcb7487ce",
+             measurementId: "G-JPKFDBWDNW"
+         };
+         
+         // Initialize Firebase
+         firebase.initializeApp(firebaseConfig);
+         
+         const db = firebase.database();
+         const auth = firebase.auth();
+         const storage = firebase.storage();
+         
+         function showLoading() {
+             document.getElementById('loadingOverlay').classList.remove('d-none');
+         }
+         
+         function hideLoading() {
+             document.getElementById('loadingOverlay').classList.add('d-none');
+         }
+         
+         function showToast(message, type = 'info') {
+             const toastContainer = document.getElementById('toastContainer');
+             const toast = document.createElement('div');
+             toast.className = `toast ${type}`;
+             toast.textContent = message;
+             toastContainer.appendChild(toast);
+         
+             toast.offsetHeight; // Trigger reflow
+             toast.classList.add('show');
+             setTimeout(() => {
+                 toast.classList.remove('show');
+                 setTimeout(() => {
+                     toastContainer.removeChild(toast);
+                 }, 300);
+             }, 3000);
+         }
+         
+         function showHome() {
+           document.getElementById('homeContainer').classList.remove('hidden');
+           document.getElementById('dashboardContainer').classList.add('hidden');
+           document.getElementById('homeLink').classList.remove('hidden');
+           document.getElementById('logoutLink').classList.add('hidden');
+           document.getElementById('dashboardLink').classList.add('disabled');
+         }
+         
+         function showDashboard() {
+    document.getElementById('homeContainer').classList.add('hidden');
+    document.getElementById('dashboardContainer').classList.remove('hidden');
+    document.getElementById('homeLink').classList.add('hidden');
+    document.getElementById('logoutLink').classList.remove('hidden');
+    document.getElementById('dashboardLink').classList.remove('disabled');
+    showDashboardOptions();
+}
+         
+         function showDashboardOptions() {
+             document.getElementById('dashboardOptions').classList.remove('hidden');
+             document.getElementById('logEntrySection').classList.add('hidden');
+             document.getElementById('imageGallerySection').classList.add('hidden');
+         }
+         
+         function showLogEntrySection() {
+             document.getElementById('dashboardOptions').classList.add('hidden');
+             document.getElementById('logEntrySection').classList.remove('hidden');
+             document.getElementById('imageGallerySection').classList.add('hidden');
+             loadLogEntries();
+             updateMacronutrientChart();
+         }
+         
+         let currentTankId = null;
+         
+         function showImageGallerySection() {
+            document.getElementById('dashboardOptions').classList.add('hidden');
+            document.getElementById('logEntrySection').classList.add('hidden');
+            document.getElementById('imageGallerySection').classList.remove('hidden');
+            document.getElementById('tankSelectionView').classList.remove('hidden');
+            document.getElementById('tankGalleryView').classList.add('hidden');
+            loadTanks();
+         }
+         
+         function showTankSelection() {
+            document.getElementById('tankSelectionView').classList.remove('hidden');
+            document.getElementById('tankGalleryView').classList.add('hidden');
+            loadTanks();
+         }
+         
+         function showAddTankModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addTankModal'));
+            modal.show();
+         }
+         
+         
+         function showLogEntrySection() {
+             document.getElementById('logEntrySection').classList.remove('hidden');
+             document.getElementById('imageGallerySection').classList.add('hidden');
+             loadLogEntries();
+             updateMacronutrientChart();
+         }
+         
+         function showImageGallerySection() {
+             document.getElementById('logEntrySection').classList.add('hidden');
+             document.getElementById('imageGallerySection').classList.remove('hidden');
+             loadImages();
+         }
+         function loadExistingTanks() {
+    if (!auth.currentUser) {
+        console.log("User not authenticated, cannot load tanks");
+        return;
+    }
+
+    const tankList = document.getElementById('tankList');
+    tankList.innerHTML = '';
+    showLoading();
+
+    db.ref('tanks').orderByChild('userId').equalTo(auth.currentUser.uid).once('value')
+        .then((snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach(childSnapshot => {
+                    const tank = childSnapshot.val();
+                    const tankElement = document.createElement('div');
+                    tankElement.className = 'tank-item';
+                    tankElement.innerHTML = `
+                        <div class="tank-icon">
+                            ${generateTankIcon(tank.name)}
+                        </div>
+                        <div class="tank-buttons">
+                            <button class="btn btn-primary btn-sm" onclick="openTankGallery('${childSnapshot.key}', '${tank.name}')">View Images</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editTank('${childSnapshot.key}', '${tank.name}')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteTank('${childSnapshot.key}')">Delete</button>
+                        </div>
+                    `;
+                    tankList.appendChild(tankElement);
+                });
+            } else {
+                tankList.innerHTML = '<p class="text-center">No tanks created yet. Click "Add New Tank" to get started.</p>';
+            }
+            hideLoading();
+        })
+        .catch((error) => {
+            console.error("Error loading existing tanks:", error);
+            showToast('Error loading tanks. Please try again.', 'error');
+            hideLoading();
+        });
+}
+async function addNewTank() {
+    const tankName = document.getElementById('newTankName').value.trim();
+    if (tankName) {
+        const newTankRef = db.ref('tanks').push();
+        const tankIcon = generateTankIcon(tankName);
+        await newTankRef.set({
+            name: tankName,
+            icon: tankIcon,
+            userId: auth.currentUser.uid
+        });
+        showToast('Tank added successfully!', 'success');
+        loadExistingTanks(); // Refresh the tank list
+        bootstrap.Modal.getInstance(document.getElementById('addTankModal')).hide();
+    } else {
+        showToast('Please enter a tank name', 'error');
+    }
+}
+         function generateTankIcon(tankName) {
+         // Define a set of warm, earthy colors
+         const colors = [
+         'hsl(30, 70%, 50%)', // Warm orange
+         'hsl(40, 70%, 50%)', // Earthy yellow
+         'hsl(10, 70%, 50%)', // Warm brown
+         'hsl(20, 70%, 60%)', // Soft orange
+         'hsl(25, 70%, 60%)', // Light brown
+         'hsl(45, 70%, 60%)', // Warm beige
+         ];
+         
+         // Randomly select a color from the list
+         const randomColor = colors[Math.floor(Math.random() * colors.length)];
+         
+         return `
+         <div style="display: flex; align-items: center;">
+            <div style="width: 50px; height: 50px; background-color: ${randomColor}; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; margin-right: 10px;">
+                ${tankName[0].toUpperCase()}
+            </div>
+            <span style="font-size: 1.2em; font-weight: bold; color: #333;">${tankName}</span>
+         </div>
+         `;
+         }
+         
+         async function loadTanks() {
+         const tankList = document.getElementById('tankList');
+         tankList.innerHTML = '';
+         const snapshot = await db.ref('tanks').orderByChild('userId').equalTo(auth.currentUser.uid).once('value');
+         snapshot.forEach(childSnapshot => {
+         const tank = childSnapshot.val();
+         const tankElement = document.createElement('div');
+         tankElement.className = 'tank-item'; // Apply tank-item class for styling
+         tankElement.innerHTML = `
+            <div class="card">
+                <div class="card-body">
+                    ${generateTankIcon(tank.name)}
+                    <div class="mt-3">
+                        <button class="btn btn-primary btn-sm" onclick="openTankGallery('${childSnapshot.key}', '${tank.name}')">View Images</button>
+                        <button class="btn btn-secondary btn-sm" onclick="editTank('${childSnapshot.key}', '${tank.name}')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTank('${childSnapshot.key}')">Delete</button>
+                    </div>
+                </div>
+            </div>
+         `;
+         tankList.appendChild(tankElement);
+         });
+         }
+         
+         function openTankGallery(tankId, tankName) {
+         currentTankId = tankId;
+         document.getElementById('currentTankName').textContent = tankName;
+         document.getElementById('tankSelectionView').classList.add('hidden');
+         document.getElementById('tankGalleryView').classList.remove('hidden');
+         loadImages();
+         }
+         
+         function editTank(tankId, currentName) {
+         const newName = prompt("Enter new name for the tank:", currentName);
+         if (newName && newName !== currentName) {
+         db.ref('tanks').child(tankId).update({ 
+            name: newName,
+            icon: generateTankIcon(newName)
+         }).then(() => {
+            showToast('Tank renamed successfully!', 'success');
+            loadTanks();
+         }).catch(error => {
+            showToast('Error renaming tank. Please try again.', 'error');
+         });
+         }
+         }
+         
+         function deleteTank(tankId) {
+         if (confirm("Are you sure you want to delete this tank? All images in this tank will also be deleted.")) {
+         db.ref('tanks').child(tankId).remove()
+            .then(() => {
+                showToast('Tank deleted successfully!', 'success');
+                // TODO: Delete all images associated with this tank
+                loadTanks();
+            }).catch(error => {
+                showToast('Error deleting tank. Please try again.', 'error');
+            });
+         }
+         }
+         
+         async function login() {
+             showLoading();
+             const email = document.getElementById('email').value;
+             const password = document.getElementById('password').value;
+             try {
+                 await auth.signInWithEmailAndPassword(email, password);
+                 showToast('Logged in successfully!', 'success');
+                 showDashboard();
+             } catch (error) {
+                 showToast('Login failed: ' + error.message, 'error');
+             }
+             hideLoading();
+         }
+         
+         async function register() {
+             showLoading();
+             const email = document.getElementById('email').value;
+             const password = document.getElementById('password').value;
+             try {
+                 await auth.createUserWithEmailAndPassword(email, password);
+                 showToast('Registered successfully!', 'success');
+                 showDashboard();
+             } catch (error) {
+                 showToast('Registration failed: ' + error.message, 'error');
+             }
+             hideLoading();
+         }
+         
+         async function logout() {
+             try {
+                 await auth.signOut();
+                 showToast('Logged out successfully!', 'success');
+                 showHome();
+             } catch (error) {
+                 showToast('Logout failed: ' + error.message, 'error');
+             }
+         }
+         
+         async function submitLogEntry() {
+    showLoading();
+    const date = document.getElementById('date').value;
+    const tank = document.getElementById('tank').value;
+    const foodItem = document.getElementById('foodItem').value;
+    const foodFed = document.getElementById('foodFed').value;
+    const phosphorous = document.getElementById('phosphorous').value;
+    const nitrogen = document.getElementById('nitrogen').value;
+    const potassium = document.getElementById('potassium').value;
+    const emissions = document.getElementById('emissions').value;
+
+    try {
+        const newLogEntryRef = db.ref('logEntries').push();
+        await newLogEntryRef.set({
+            date,
+            tank,
+            foodItem,
+            foodFed,
+            phosphorous,
+            nitrogen,
+            potassium,
+            emissions,
+            userId: auth.currentUser.uid
+        });
+        showToast('Log entry submitted successfully!', 'success');
+        document.getElementById('logEntryForm').reset();
+        loadLogEntries();
+        updateMacronutrientChart();
+    } catch (error) {
+        console.error("Error adding document: ", error);
+        showToast('Error submitting log entry. Please try again.', 'error');
+    }
+    hideLoading();
+}
+
+         
+async function loadLogEntries(filterDate = '', filterTank = '', sortBy = '') {
+    showLoading();
+    const table = document.getElementById('logTable').getElementsByTagName('tbody')[0];
+    table.innerHTML = '';
+    try {
+        let query = db.ref('logEntries').orderByChild('userId').equalTo(auth.currentUser.uid);
+        
+        const snapshot = await query.once('value');
+        let entries = [];
+        snapshot.forEach(childSnapshot => {
+            entries.push({...childSnapshot.val(), key: childSnapshot.key});
+        });
+        
+        if (filterDate) {
+            entries = entries.filter(entry => entry.date === filterDate);
+        }
+        
+        if (filterTank) {
+            entries = entries.filter(entry => entry.tank === filterTank);
+        }
+        
+        if (sortBy) {
+            entries.sort((a, b) => {
+                if (sortBy === 'date') {
+                    return new Date(a[sortBy]) - new Date(b[sortBy]);
+                } else {
+                    return parseFloat(a[sortBy]) - parseFloat(b[sortBy]);
+                }
+            });
+        }
+        
+        entries.forEach(data => {
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td>${data.date}</td>
+                <td>${data.tank}</td>
+                <td>${data.foodItem}</td>
+                <td>${data.foodFed}</td>
+                <td>${data.phosphorous}</td>
+                <td>${data.nitrogen}</td>
+                <td>${data.potassium}</td>
+                <td>${data.emissions}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteLogEntry('${data.key}')"><i class="fas fa-trash"></i></button></td>
+            `;
+        });
+    } catch (error) {
+        console.error("Error fetching documents: ", error);
+        showToast('Error loading log entries. Please try again.', 'error');
+    }
+    hideLoading();
+}
+
+         
+         function applyFilters() {
+         const filterDate = document.getElementById('dateFilter').value;
+         const filterTank = document.getElementById('tankFilter').value;
+         const sortBy = document.getElementById('sortBy').value;
+         loadLogEntries(filterDate, filterTank, sortBy);
+         }
+         
+         function resetFilters() {
+         document.getElementById('dateFilter').value = '';
+         document.getElementById('tankFilter').value = '';
+         document.getElementById('sortBy').value = '';
+         loadLogEntries();
+         }
+         async function deleteLogEntry(key) {
+         showLoading();
+         try {
+           await db.ref('logEntries').child(key).remove();
+           showToast('Log entry deleted successfully!', 'success');
+           await loadLogEntries(); // Reload the entries
+           const remainingEntries = await db.ref('logEntries')
+               .orderByChild('userId')
+               .equalTo(auth.currentUser.uid)
+               .once('value');
+           if (remainingEntries.exists()) {
+               updateMacronutrientChart(); // Update the chart if there are remaining entries
+           } else {
+               // No entries left, hide the chart
+               document.getElementById('chartSection').classList.add('hidden');
+           }
+         } catch (error) {
+           console.error("Error deleting entry: ", error);
+           showToast('Error deleting log entry. Please try again.', 'error');
+         }
+         hideLoading();
+         }
+         
+         function downloadExcel() {
+    const table = document.getElementById('logTable');
+    let csvContent = "data:text/csv;charset=utf-8,";
+    
+    // Add header row
+    const headers = ["Date", "Tank", "Food Item", "Food fed (g)", "P (mg)", "N (mg)", "K (mg)", "Emissions (kg CO2/kg)"];
+    csvContent += headers.join(",") + "\r\n";
+    
+    // Add data rows
+    for (let i = 1; i < table.rows.length; i++) {
+        const row = table.rows[i];
+        const rowData = Array.from(row.cells).slice(0, -1).map(cell => cell.innerText); // Exclude the Actions column
+        csvContent += rowData.join(",") + "\r\n";
+    }
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "nutrient_log_entries.csv");
+    document.body.appendChild(link);
+    link.click();
+}
+         
+         async function uploadImages() {
+         showLoading();
+         const input = document.getElementById('imageInput');
+         const files = input.files;
+         if (files.length === 0) {
+         showToast('No files selected!', 'error');
+         hideLoading();
+         return;
+         }
+         
+         try {
+         for (const file of files) {
+            const date = new Date().toISOString().split('T')[0];
+            const defaultName = `image_${date}_${Math.random().toString(36).substring(7)}`;
+            const storageRef = storage.ref(`images/${auth.currentUser.uid}/${currentTankId}/${file.name}`);
+            await storageRef.put(file);
+            const url = await storageRef.getDownloadURL();
+            await db.ref('images').push({
+                userId: auth.currentUser.uid,
+                tankId: currentTankId,
+                url: url,
+                filename: file.name,
+                displayName: defaultName
+            });
+         }
+         showToast('Images uploaded successfully!', 'success');
+         loadImages();
+         } catch (error) {
+         console.error("Error uploading images: ", error);
+         showToast('Error uploading images. Please try again.', 'error');
+         }
+         hideLoading();
+         }
+         
+         async function loadImages(searchTerm = '') {
+         showLoading();
+         const gallery = document.getElementById('gallery');
+         gallery.innerHTML = '';
+         try {
+         const snapshot = await db.ref('images')
+            .orderByChild('tankId')
+            .equalTo(currentTankId)
+            .once('value');
+         let images = [];
+         snapshot.forEach(childSnapshot => {
+            const imageData = childSnapshot.val();
+            images.push({
+                ...imageData,
+                key: childSnapshot.key,
+                displayName: imageData.displayName || imageData.filename || 'Unnamed Image'
+            });
+         });
+         
+         if (searchTerm && searchTerm.trim().length > 0) {
+            const lowerSearchTerm = searchTerm.toLowerCase().trim();
+            images = images.filter(img => 
+                img.displayName.toLowerCase().includes(lowerSearchTerm) ||
+                (img.filename && img.filename.toLowerCase().includes(lowerSearchTerm))
+            );
+         }
+         
+         if (images.length === 0) {
+            gallery.innerHTML = '<p>No images found.</p>';
+         } else {
+            images.forEach(data => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 col-sm-6 mb-4';
+                col.innerHTML = `
+                    <div class="image-container">
+                        <img src="${data.url}" alt="${data.displayName}" class="img-fluid" onclick="openImageModal('${data.url}')">
+                        <div class="image-name">${data.displayName}</div>
+                        <i class="fas fa-edit rename-image" onclick="renameImage('${data.key}', '${data.displayName}')"></i>
+                        <i class="fas fa-trash delete-image" onclick="deleteImage('${data.key}', '${data.filename}')"></i>
+                        <i class="fas fa-exchange-alt move-image" onclick="showMoveTankModal('${data.key}')"></i>
+                    </div>
+                `;
+                gallery.appendChild(col);
+            });
+         }
+         } catch (error) {
+         console.error("Error loading images: ", error);
+         showToast('Error loading images. Please try again.', 'error');
+         gallery.innerHTML = '<p>Error loading images. Please try again.</p>';
+         }
+         hideLoading();
+         }
+         
+         function renameImage(key, currentName) {
+             const newName = prompt("Enter new name for the image:", currentName);
+             if (newName && newName !== currentName) {
+                 db.ref('images').child(key).update({ displayName: newName })
+                     .then(() => {
+                         showToast('Image renamed successfully!', 'success');
+                         loadImages();
+                     })
+                     .catch(error => {
+                         console.error("Error renaming image: ", error);
+                         showToast('Error renaming image. Please try again.', 'error');
+                     });
+             }
+         }
+         
+         async function moveImage(imageKey, destinationTankId) {
+         try {
+         const imageRef = db.ref('images').child(imageKey);
+         const imageSnapshot = await imageRef.once('value');
+         const imageData = imageSnapshot.val();
+         
+         // Update the tankId of the image
+         await imageRef.update({ tankId: destinationTankId });
+         
+         // Move the image in storage
+         const oldStorageRef = storage.ref(`images/${auth.currentUser.uid}/${currentTankId}/${imageData.filename}`);
+         const newStorageRef = storage.ref(`images/${auth.currentUser.uid}/${destinationTankId}/${imageData.filename}`);
+         
+         const imageBlob = await oldStorageRef.getDownloadURL().then(url => fetch(url).then(res => res.blob()));
+         await newStorageRef.put(imageBlob);
+         await oldStorageRef.delete();
+         
+         showToast('Image moved successfully!', 'success');
+         loadImages();
+         } catch (error) {
+         console.error("Error moving image: ", error);
+         showToast('Error moving image. Please try again.', 'error');
+         }
+         }
+         
+         async function deleteImage(key, filename) {
+               showLoading();
+               try {
+                   await db.ref('images').child(key).remove();
+                   await storage.ref(`images/${auth.currentUser.uid}/${filename}`).delete();
+                   showToast('Image deleted successfully!', 'success');
+                   loadImages();
+               } catch (error) {
+                   console.error("Error deleting image: ", error);
+                   showToast('Error deleting image. Please try again.', 'error');
+               }
+               hideLoading();
+           }
+         
+           function showMoveTankModal(imageKey) {
+         // Implement a modal to select the destination tank
+         // Then call moveImage(imageKey, destinationTankId)
+         }
+         
+           function openImageModal(imageUrl) {
+               const modalImage = document.getElementById('modalImage');
+               modalImage.src = imageUrl;
+               const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+               imageModal.show();
+           }
+         
+           async function updateMacronutrientChart() {
+         const chartContainer = document.getElementById('chartSection');
+         try {
+         const snapshot = await db.ref('logEntries')
+            .orderByChild('userId')
+            .equalTo(auth.currentUser.uid)
+            .once('value');
+         
+         let totalNitrogen = 0;
+         let totalPhosphorous = 0;
+         let totalPotassium = 0;
+         let entryCount = 0;
+         
+         snapshot.forEach(childSnapshot => {
+            const entry = childSnapshot.val();
+            totalNitrogen += parseFloat(entry.nitrogen) || 0;
+            totalPhosphorous += parseFloat(entry.phosphorous) || 0;
+            totalPotassium += parseFloat(entry.potassium) || 0;
+            entryCount++;
+         });
+         
+         if (entryCount > 0) {
+            const ctx = document.getElementById('macronutrientChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.macronutrientChart instanceof Chart) {
+                window.macronutrientChart.destroy();
+            }
+         
+            window.macronutrientChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Nitrogen', 'Phosphorous', 'Potassium'],
+                    datasets: [{
+                        data: [totalNitrogen, totalPhosphorous, totalPotassium],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: 'Total Macronutrient Breakdown'
+                    }
+                }
+            });
+            chartContainer.classList.remove('hidden');
+         } else {
+            // No entries, hide the chart
+            chartContainer.classList.add('hidden');
+         }
+         } catch (error) {
+         console.error("Error updating macronutrient chart:", error);
+         showToast('Error updating macronutrient chart. Please try again.', 'error');
+         chartContainer.classList.add('hidden');
+         }
+         }
+         
+         
+         
+           document.getElementById('homeLink').addEventListener('click', showHome);
+           document.getElementById('dashboardLink').addEventListener('click', (e) => {
+               e.preventDefault();
+               if (auth.currentUser) {
+                   showDashboard();
+               } else {
+                   showHome();
+               }
+           });
+           document.getElementById('logoutLink').addEventListener('click', logout);
+         
+           document.getElementById('imageSearch').addEventListener('input', (e) => {
+               loadImages(e.target.value);
+           });
+           function addBackToDashboardButton() {
+         const backButton = `<button class="btn btn-secondary mb-3" onclick="showDashboardOptions()"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>`;
+         
+         const logEntrySection = document.getElementById('logEntrySection');
+         if (!logEntrySection.querySelector('.back-to-dashboard')) {
+           logEntrySection.insertAdjacentHTML('afterbegin', backButton);
+         }
+         
+         const imageGallerySection = document.getElementById('imageGallerySection');
+         if (!imageGallerySection.querySelector('.back-to-dashboard')) {
+           imageGallerySection.insertAdjacentHTML('afterbegin', backButton);
+         }
+         }
+         
+           // Call this function after the page loads
+           addBackToDashboardButton();
+         
+         
+           document.getElementById('logEntryButton').addEventListener('click', showLogEntrySection);
+           document.getElementById('imageGalleryButton').addEventListener('click', showImageGallerySection);
+           document.getElementById('imageGalleryButton').addEventListener('click', showImageGallerySection);
+         document.getElementById('imageSearch').addEventListener('input', (e) => {
+         loadImages(e.target.value);
+         });
+
+           const darkModeToggle = document.getElementById('darkModeToggle');
+           darkModeToggle.addEventListener('change', () => {
+               if (darkModeToggle.checked) {
+                   document.body.classList.add('dark-mode');
+               } else {
+                   document.body.classList.remove('dark-mode');
+               }
+           });
+
+           async function loadTankOptions() {
+    if (!auth.currentUser) {
+        console.log("User not authenticated, skipping loadTankOptions");
+        return;
+    }
+
+    const tankFilter = document.getElementById('tankFilter');
+    tankFilter.innerHTML = '<option value="">All Tanks</option>';
+    
+    try {
+        const snapshot = await db.ref('logEntries').orderByChild('userId').equalTo(auth.currentUser.uid).once('value');
+        const tanks = new Set();
+        snapshot.forEach(childSnapshot => {
+            const entry = childSnapshot.val();
+            if (entry.tank) {
+                tanks.add(entry.tank);
+            }
+        });
+        
+        tanks.forEach(tank => {
+            const option = document.createElement('option');
+            option.value = tank;
+            option.textContent = tank;
+            tankFilter.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading tank options:", error);
+    }
+}
+           async function loadUserData() {
+    if (!auth.currentUser) {
+        console.log("No user logged in, cannot load data");
+        return;
+    }
+    try {
+        await Promise.all([
+            loadTankOptions(),
+            loadExistingTanks(),
+            loadLogEntries(),
+            updateMacronutrientChart()
+        ]);
+    } catch (error) {
+        console.error("Error loading user data:", error);
+        showToast('Error loading user data. Please try again.', 'error');
+    }
+}
+
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        await loadUserData();
+        showDashboard();
+    } else {
+        showHome();
+    }
+});
+      </script>
+   </body>
+</html>
